@@ -30,24 +30,32 @@ st.title("Panini Parser")
 st.write("Ask anything to the chatbot!")
 
 if "model" not in st.session_state:
-    url = "https://drive.google.com/file/d/1-kU1fY8LdiNa-osQwpaGO43vB3LN88-7/view?usp=drive_link"
+    # Download the model
+    url = "https://drive.google.com/uc?id=1-kU1fY8LdiNa-osQwpaGO43vB3LN88-7"
     output = "model.pth"
     gdown.download(url, output, quiet=False)
-    config = GPT2Config(vocab_size=65536,n_head=16)
-    st.session_state.model = GPT2LMHeadModel(config)
+    
+    # Load the model
+    config = GPT2Config(vocab_size=65536, n_head=16)
+    model = GPT2LMHeadModel(config)
     model_save_path = output
-    st.session_state.model.load_state_dict(torch.load(model_save_path))
+    model.load_state_dict(torch.load(model_save_path, map_location=torch.device('cpu')))
+    model.eval()  # Set model to evaluation mode
+    model.to("cpu")  # Move the model to CPU
+    st.session_state.model = model
 
-if "token" not in st.session_state:
-
+if "tokenizer" not in st.session_state:
     tokenizer_path = 'fine_tuned_tokenizer.json'
-    st.session_state.tokenizer = PreTrainedTokenizerFast(tokenizer_file = tokenizer_path)
+    tokenizer = PreTrainedTokenizerFast(tokenizer_file=tokenizer_path)
 
-    if st.session_state.tokenizer.pad_token is None:
-        if st.session_state.tokenizer.eos_token is not None:
-            st.session_state.tokenizer.pad_token = st.session_state.tokenizer.eos_token
+    # Add padding token if necessary
+    if tokenizer.pad_token is None:
+        if tokenizer.eos_token is not None:
+            tokenizer.pad_token = tokenizer.eos_token
         else:
-            st.session_state.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+            tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+
+    st.session_state.tokenizer = tokenizer
 
 user_input = st.text_input("You:", placeholder="Type your message here...")
 
