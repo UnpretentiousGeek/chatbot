@@ -59,7 +59,9 @@ if "tokenizer" not in st.session_state:
 
 user_input = st.text_input("You:", placeholder="Type your message here...")
 
+temp = st.sidebar.slider("Temperature", 0.1, 1.0, 0.3)
+
 if user_input:
     with st.spinner("Generating response..."):
-        response = generate_text(user_input, st.session_state.model, st.session_state.tokenizer, max_length=50, temperature=0.3, top_k=50, top_p=0.9 )
+        response = generate_text(user_input, st.session_state.model, st.session_state.tokenizer, max_length=50, temperature=temp, top_k=50, top_p=0.9 )
         st.write(f"Chatbot: {response}")
