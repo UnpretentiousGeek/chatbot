@@ -11,6 +11,7 @@ if "model" not in st.session_state:
     output = "model.bin"
     gdown.download(url, output, quiet=False)
     st.session_state.model = output
+    st.rerun()
 
 else: 
     st.write("hello")
