@@ -4,7 +4,7 @@ import gdown
 import torch
 
 
-def generate_text(prompt, max_length=50, temperature=0.3, top_k=50, top_p=0.9, my_model, myTokenizer):
+def generate_text(prompt, my_model, myTokenizer, max_length=50, temperature=0.3, top_k=50, top_p=0.9):
     # Encode the input prompt
     input_ids = myTokenizer.encode(prompt, return_tensors='pt').to(my_model.device)
     attention_mask = torch.ones_like(input_ids)
@@ -53,5 +53,5 @@ user_input = st.text_input("You:", placeholder="Type your message here...")
 
 if user_input:
     with st.spinner("Generating response..."):
-        response = generate_text(user_input, max_length=50, temperature=0.3, top_k=50, top_p=0.9, st.session_state.model, st.session_state.tokenizer)
+        response = generate_text(user_input, st.session_state.model, st.session_state.tokenizer, max_length=50, temperature=0.3, top_k=50, top_p=0.9 )
         st.write(f"Chatbot: {response}")
